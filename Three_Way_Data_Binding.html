@@ -1,0 +1,74 @@
+<html ng-app="shanks">
+  <head>
+    <!-- AngularJS include -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.6/angular.min.js'></script>
+
+    <!-- Firebase and AngularFire libraries -->
+    <script src='https://cdn.firebase.com/v0/firebase.js'></script>
+    <script src='https://cdn.firebase.com/libs/angularfire/0.7.0/angularfire.min.js'></script>
+
+    <!-- Bootstrap - latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+  </head>
+  <body ng-controller="ProblemController">
+    <div class="container">
+      <div class="panel panel-default">
+        <div class="panel-heading">Haskellizer - Generating Problems with JavaScript</div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-lg-2">
+              <input type="number" class="form-control" ng-model="priority" placeholder="Priority">
+            </div>
+            <div class="col-lg-3">
+              <input type="text" class="form-control" ng-model="title" placeholder="Title">
+            </div>
+            <div class="col-lg-7">
+              <input type="text" class="form-control" ng-model="description" placeholder="Description">
+            </div>
+          </div>
+        </div>
+
+        <!-- display problems using ng-repeat -->
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="prob in problems">
+            <b>{{prop.priority}}</b> <em>{{prob.title}}</em>: {{prob.description}}
+          </li>
+        </ul>
+
+      </div>
+    </div>
+
+    <script>
+      // Declare our module for this 'shanks' app
+      var app = angular.module("shanks", ["firebase"]);
+
+      // Create our Problem controller that is to be injected with $scope and Firebase service
+      app.controller('ProblemController', function ($scope, $firebase) {
+        // Get our Firebase and make it available to view (ie via $scope)
+        var ref = new Firebase("https://shanky.firebaseio.com/");
+        $scope.problems = $firebase(ref);
+
+        // expose the addProblem function to view
+        $scope.addProblem = function(e) {
+          // key 13 - Return
+          if (e.keyCode != 13) {
+            return;
+          }
+
+          // Add the new problem
+          $scope.problems.$add({
+            title: $scope.title,
+            description: $scope.description,
+            priority: $scope.priority
+          });
+
+          // reset fields
+          $scope.priority = 0;
+          $scope.title = "";
+          $scope.description = "";
+        }
+      });
+    </script>
+  </body>
+</html>
